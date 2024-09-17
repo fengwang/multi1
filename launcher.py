@@ -22,7 +22,7 @@ def fullscreen():
 
 def draw_3d_box(y, x, height, width, color):
     shadow_color = term.color_rgb(50, 50, 50)
-    
+
     # Draw shadow
     print(term.move(y+1, x+2) + shadow_color + '█' * (width-1) + term.normal)
     for i in range(height-1):

@@ -1,3 +1,22 @@
+# o_o: Ollama powered O1-like reasing chains
+
+--------
+
+
+## Build up the docker image
+
+
+```sh
+docker build --file Dockerfile . -t  o_o
+```
+
+
+
+
+
+
+
+
 # multi1: Using multiple AI providers to create o1-like reasoning chains
 
 ***IMPORTANT: multi1 is a fork of [g1](https://github.com/bklieger-groq/g1/), made by [Benjamin Klieger](https://x.com/benjaminklieger). It was made as a way to experiment with multiple AI providers included local LLMs. All credits go to the original author.***
