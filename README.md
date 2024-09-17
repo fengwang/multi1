@@ -38,6 +38,7 @@ Then visit `http://<YOUR_IP_ADDRESS>:<PORT>` in your browser to see the app.
 
 
 ### What would it cost if cover the surface of the earth with a layer of gold 1 meter in thickness?
+![gold](assets/2.png)
 
 
 
