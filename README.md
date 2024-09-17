@@ -11,8 +11,15 @@ docker build --file Dockerfile . -t  o_o
 ```
 
 
+## Bring up the docker container
 
+```sh
+docker run --rm -it  -e OLLAMA_URL=<YOUR_OLLAMA_URL> -e OLLAMA_MODEL=<YOUR_OLLAMA_MODEL> -p <PORT>:8501 o_o
+```
 
+in which `YOUR_OLLAMA_URL` is the URL of your Ollama server (such as `http://1.2.3.4:5678`), `YOUR_OLLAMA_MODEL` is the model you want to use (should be `llama3.1:70b`, and should having been installed in your Ollama server), and `<PORT>` is the port on which you want to run the server.
+
+Then visit `http://<YOUR_IP_ADDRESS>:<PORT>` in your browser to see the app.
 
 
 

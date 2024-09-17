@@ -34,8 +34,10 @@ def make_api_call(messages, max_tokens, is_final_answer=False):
                 }
             )
             response.raise_for_status()
+            print( f'Response:\n{response.json()}\n' )
             return json.loads(response.json()["message"]["content"])
         except Exception as e:
+            print( '\nFailed to retrieve json from response... trying again...\n' )
             if attempt == 2:
                 if is_final_answer:
                     return {"title": "Error", "content": f"Failed to generate final answer after 3 attempts. Error: {str(e)}"}
@@ -67,7 +69,7 @@ You MUST response using the expected json schema, and your response must be vali
 
     while True:
         start_time = time.time()
-        step_data = make_api_call(messages, 300)
+        step_data = make_api_call(messages, 1024)
         end_time = time.time()
         thinking_time = end_time - start_time
         total_thinking_time += thinking_time
@@ -88,7 +90,7 @@ You MUST response using the expected json schema, and your response must be vali
     messages.append({"role": "user", "content": "Please provide the final answer based on your reasoning above."})
 
     start_time = time.time()
-    final_data = make_api_call(messages, 200, is_final_answer=True)
+    final_data = make_api_call(messages, 1024, is_final_answer=True)
     end_time = time.time()
     thinking_time = end_time - start_time
     total_thinking_time += thinking_time
@@ -123,7 +125,8 @@ def main():
                 for i, (title, content, thinking_time) in enumerate(steps):
                     if title.startswith("Final Answer"):
                         st.markdown(f"### {title}")
-                        st.markdown(content, unsafe_allow_html=True)
+                        #st.markdown(content, unsafe_allow_html=True)
+                        st.markdown(content.replace('```', '\n```'), unsafe_allow_html=True)
                     else:
                         with st.expander(title, expanded=True):
                             st.markdown(content.replace('\n', '<br>'), unsafe_allow_html=True)
