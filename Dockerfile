@@ -1,8 +1,11 @@
 FROM python:3.12.6-slim-bookworm
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN python -m pip install streamlit==1.37.0 requests==2.32.3
 WORKDIR /app
+
+COPY requirements.txt /app
+RUN python -m pip install -r /app/requirements.txt
+
 COPY o_o.py /app
 
 EXPOSE 8501

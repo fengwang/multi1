@@ -1,3 +1,30 @@
+system_prompt:str = """
+You are an expert AI assistant that creates advanced reasoning chains. For each step, provide a title and content that demonstrates your thought process. Respond in JSON format with 'title', 'content', and 'next_action' (either 'continue' or 'final_answer') keys. FOLLOW THESE GUIDELINES:
+1. USE AT LEAST 5 REASONING STEPS, aiming for 10-20 steps for complex problems.
+2. EMPLOY MULTIPLE METHODS: Use at least 3 distinct approaches to derive the answer.
+3. EXPLORE ALTERNATIVES: Consider and analyze potential alternative answers.
+4. CHALLENGE ASSUMPTIONS: Critically examine your own reasoning and initial conclusions.
+5. ADDRESS LLM LIMITATIONS: Be aware of and compensate for typical AI shortcomings.
+6. VISUALIZE WHEN POSSIBLE: If applicable, describe how you would visually represent the problem.
+7. QUANTIFY CONFIDENCE: For each step and the final answer, provide a confidence level (0-100%).
+8. CITE SOURCES: If referring to factual information, mention where you would source it from.
+9. ETHICAL CONSIDERATIONS: If relevant, discuss any ethical implications of the problem or solution.
+10. REAL-WORLD APPLICATION: Relate the problem or solution to practical, real-world scenarios.
+11. NO ONLINE TOOLS AND SEARCHING: You cannot use online tools or search the internet.
+12. YOUR RESPONSE MUST BE VALID JSON: This json response is essential for our job.
+
+Example of a valid JSON response:
+{
+    "title": "Initial Problem Analysis",
+    "content": "To begin solving this problem, I'll break it down into its core components...",
+    "confidence": 90,
+    "next_action": "continue"
+}
+"""
+
+
+
+
 import json
 import os
 import requests
@@ -33,6 +60,7 @@ def make_api_call(messages, max_tokens, is_final_answer=False):
                     }
                 }
             )
+            print( f'Post request:\n{messages}\n' )
             response.raise_for_status()
             print( f'Response:\n{response.json()}\n' )
             return json.loads(response.json()["message"]["content"])
@@ -55,21 +83,22 @@ Example of a valid JSON response:
     "title": "Identifying Key Information",
     "content": "To begin solving this problem, we need to carefully examine the given information and identify the crucial elements that will guide our solution process. This involves...",
     "next_action": "continue"
-}```
-
+}```.
 You MUST response using the expected json schema, and your response must be valid json. This JSON response is essential for our job.
 """},
         {"role": "user", "content": prompt},
         {"role": "assistant", "content": "Thank you! I will now think step by step following my instructions, starting at the beginning after decomposing the problem."}
     ]
 
+
     steps = []
     step_count = 1
     total_thinking_time = 0
 
+    # First pass
     while True:
         start_time = time.time()
-        step_data = make_api_call(messages, 1024)
+        step_data = make_api_call(messages, 512)
         end_time = time.time()
         thinking_time = end_time - start_time
         total_thinking_time += thinking_time
@@ -86,11 +115,31 @@ You MUST response using the expected json schema, and your response must be vali
         # Yield after each step for Streamlit to update
         yield steps, None  # We're not yielding the total time until the end
 
+    # Second pass for recursive reasoning
+    step_count = 1  # Reset step count for second pass
+    messages = messages + [{"role": "user", "content": "Please re-examine your reasoning. Identify any weak points or alternative solutions you may have missed."}]
+
+    while True:
+        start_time = time.time()
+        step_data = make_api_call(messages, 512)
+        end_time = time.time()
+        thinking_time = end_time - start_time
+        total_thinking_time += thinking_time
+
+        steps.append((f"Second Pass Step {step_count}: {step_data['title']}", step_data["content"], thinking_time))
+        messages.append({"role": "assistant", "content": json.dumps(step_data)})
+
+        if (step_data["next_action"] == "final_answer" or step_count > 10):  # Keep second pass limited to avoid excessive looping
+            break
+
+        step_count += 1
+        yield steps, None  # Yield after each step for Streamlit to update
+
     # Generate final answer
     messages.append({"role": "user", "content": "Please provide the final answer based on your reasoning above."})
 
     start_time = time.time()
-    final_data = make_api_call(messages, 1024, is_final_answer=True)
+    final_data = make_api_call(messages, 512, is_final_answer=True)
     end_time = time.time()
     thinking_time = end_time - start_time
     total_thinking_time += thinking_time
@@ -98,6 +147,10 @@ You MUST response using the expected json schema, and your response must be vali
     steps.append(("Final Answer", final_data['content'], thinking_time))
 
     yield steps, total_thinking_time
+
+
+
+
 
 def main():
     st.set_page_config(page_title="ol1 prototype - Ollama version", page_icon="🧠", layout="wide")
