@@ -37,9 +37,12 @@ Then visit `http://<YOUR_IP_ADDRESS>:<PORT>` in your browser to see the app.
 ![compare](assets/6.png)
 
 
+### What would it cost if cover the surface of the earth with a layer of gold 1 meter in thickness?
+
+
 
 ## Credits
 
 - **g1** was originally developed by [Benjamin Klieger](https://x.com/benjaminklieger).
 - **multi1** fork was developed by [tcsenpai](https://github.com/tcsenpai).
-
+- **two steps** was proposed by [jmxo](https://github.com/jmxo).
