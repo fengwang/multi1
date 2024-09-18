@@ -33,7 +33,7 @@ import time
 
 # Get configuration from environment variables
 OLLAMA_URL = os.getenv('OLLAMA_URL', 'ERROR: YOU MUST SET "OLLAMA_URL" IN YOUR ENVIRONMENT VARIBLES')
-OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'lama3.1:70b')
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama3.1:70b')
 print(f'Got OLLAMA_URL: {OLLAMA_URL} and OLLAMA_MODEL: {OLLAMA_MODEL} from your settings')
 
 if OLLAMA_MODEL != 'llama3.1:70b':
